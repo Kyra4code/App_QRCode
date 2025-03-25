@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { StyleSheet, Text, View, Linking, Button } from 'react-native';
 import { CameraView, Camera } from 'expo-camera';
-import * as icon from "@expo/vector-icons"
+import {MaterialCommunityIcons} from "@expo/vector-icons"
 
 export default function App() {
 
@@ -10,39 +10,29 @@ export default function App() {
   const [dados, setDados] = useState(null)
 
   useEffect(()=>{
-    try{
-
     async function CheckPermissão(){
-      const {status} = await Camera.getCameraPermissionsAsync();
-      setPermissao(status === 'granted')
-    }
-
+      const { status } = await Camera.getCameraPermissionsAsync();
+      setPermissao(status === 'granted')      
+    };
     CheckPermissão();
-
-  }catch(error){
-    console.log(error)
-  }
-
-  },[])
+  }, []);
 
   function digitalizar({type, data}){
     setDigitalizado(true);
     setDados(data)
+    alert("Código do tipo " + type + " e link é " + data)
   }
-
-
 
   function abrirLink(){
     Linking.openURL(dados)
   }
 
-    switch(permissao){
-      case null:
-        return <Text>Aguardando a permissão para camera</Text>
-      case false:
+      if(permissao === null){
+        return <Text>Solicitando a permissão para camera</Text>
+      }
+      if(permissao === false){
         return <Text>Sem acesso a camera</Text>
-    }
-
+      } 
 
     return(
       <View style={styles.container}>
@@ -50,9 +40,9 @@ export default function App() {
         <CameraView 
         onBarcodeScanned={digitalizado ? undefined: digitalizar}
         barcodeScannerSettings={{barcodeTypes:['qr', 'pdf417']}}
-        style={styles.StyleSheet.absoluteFillObject}
+        style={StyleSheet.absoluteFillObject}
         />
-        <icon.MaterialCommunityIcons
+        <MaterialCommunityIcons
           name='qrcode-scan'
           size={100}
           color='orange'
